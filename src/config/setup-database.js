@@ -10,29 +10,51 @@ async function setupDatabase() {
   try {
     // Create database if it doesn't exist
     const { database } = await client.databases.createIfNotExists({
-      id: 'tbatbdata_db',
-      offerThroughput: 400
+      id: 'tbatbdata_db'
     });
 
     console.log('Database created/verified:', database.id);
 
-    // Create container if it doesn't exist
-    const { container } = await database.containers.createIfNotExists({
+    // Create images container if it doesn't exist
+    const { container: imagesContainer } = await database.containers.createIfNotExists({
       id: 'images',
       partitionKey: { paths: ['/id'] },
       indexingPolicy: {
         indexingMode: 'consistent',
         automatic: true,
         includedPaths: [
-          { path: '/id/?' },
           { path: '/creatorId/?' },
-          { path: '/createdAt/?' }
+          { path: '/createdAt/?' },
+          { path: '/title/?' },
+          { path: '/description/?' },
+          { path: '/likes/?' }
         ],
-        excludedPaths: []
+        excludedPaths: [
+          { path: '/*' }
+        ]
       }
     });
 
-    console.log('Container created/verified:', container.id);
+    console.log('Images container created/verified:', imagesContainer.id);
+
+    // Create users container if it doesn't exist
+    const { container: usersContainer } = await database.containers.createIfNotExists({
+      id: 'users',
+      partitionKey: { paths: ['/id'] },
+      indexingPolicy: {
+        indexingMode: 'consistent',
+        automatic: true,
+        includedPaths: [
+          { path: '/email/?' },
+          { path: '/role/?' }
+        ],
+        excludedPaths: [
+          { path: '/*' }
+        ]
+      }
+    });
+
+    console.log('Users container created/verified:', usersContainer.id);
 
     // Update .env with the actual database and container names
     const fs = require('fs');
@@ -52,6 +74,8 @@ async function setupDatabase() {
     fs.writeFileSync(envPath, envContent);
     
     console.log('Database setup completed successfully!');
+    console.log('Note: Please ensure to set the minimum RU/s (400) in the Azure Portal');
+    console.log('This setup is optimized for the free tier and student usage.');
   } catch (error) {
     console.error('Error setting up database:', error);
   }

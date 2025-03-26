@@ -1,12 +1,15 @@
 const { container } = require('../config/database');
 
 class Image {
-  constructor(id, creatorId, url, title, description) {
+  constructor(id, creatorId, url, title, description, location, metadata, tags) {
     this.id = id;
     this.creatorId = creatorId;
     this.url = url;
     this.title = title;
     this.description = description;
+    this.location = location || null;
+    this.metadata = metadata || {};
+    this.tags = tags || [];
     this.createdAt = new Date();
     this.likes = 0;
   }
@@ -17,7 +20,10 @@ class Image {
       imageData.creatorId,
       imageData.url,
       imageData.title,
-      imageData.description
+      imageData.description,
+      imageData.location,
+      imageData.metadata,
+      imageData.tags
     );
 
     const { resource } = await container.items.create(image);

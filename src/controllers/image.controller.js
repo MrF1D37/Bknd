@@ -34,14 +34,22 @@ const uploadImage = async (req, res) => {
     const filename = blobService.generateUniqueFileName(req.file.originalname);
     const imageUrl = await blobService.uploadImage(req.file, filename);
 
+    // Parse location, metadata, and tags from request body
+    const location = req.body.location ? JSON.parse(req.body.location) : null;
+    const metadata = req.body.metadata ? JSON.parse(req.body.metadata) : {};
+    const tags = req.body.tags ? JSON.parse(req.body.tags) : [];
+
     // Create image record in database
     const image = await Image.create({
       id: Date.now().toString(),
       creatorId: req.user.id,
       url: imageUrl,
-      filename: filename, // Store filename for potential deletion later
+      filename: filename,
       title: req.body.title,
-      description: req.body.description
+      description: req.body.description,
+      location,
+      metadata,
+      tags
     });
 
     res.status(201).json({

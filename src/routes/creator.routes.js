@@ -8,13 +8,8 @@ const router = express.Router();
 const uploadValidation = [
   body('title').notEmpty().withMessage('Title is required'),
   body('description').optional(),
-  body('location').optional().isObject().withMessage('Location must be an object'),
-  body('location.latitude').optional().isFloat({ min: -90, max: 90 }).withMessage('Invalid latitude'),
-  body('location.longitude').optional().isFloat({ min: -180, max: 180 }).withMessage('Invalid longitude'),
-  body('location.name').optional().isString().withMessage('Location name must be a string'),
-  body('metadata').optional().isObject().withMessage('Metadata must be an object'),
-  body('tags').optional().isArray().withMessage('Tags must be an array'),
-  body('tags.*').optional().isString().withMessage('Each tag must be a string')
+  body('location').optional().isString().withMessage('Location must be a string'),
+  body('tags').optional().isString().withMessage('Tags must be a string')
 ];
 
 // Apply auth middleware to all routes
@@ -50,37 +45,11 @@ router.use(roleMiddleware(['creator']));
  *                 type: string
  *                 description: Image description (optional)
  *               location:
- *                 type: object
- *                 description: Location information (optional)
- *                 properties:
- *                   latitude:
- *                     type: number
- *                     description: Latitude coordinate (-90 to 90)
- *                   longitude:
- *                     type: number
- *                     description: Longitude coordinate (-180 to 180)
- *                   name:
- *                     type: string
- *                     description: Location name/address
- *               metadata:
- *                 type: object
- *                 description: Additional image metadata (optional)
- *                 properties:
- *                   camera:
- *                     type: string
- *                     description: Camera used
- *                   settings:
- *                     type: object
- *                     description: Camera settings
- *                   dateTaken:
- *                     type: string
- *                     format: date-time
- *                     description: Date when the image was taken
+ *                 type: string
+ *                 description: Location name/place (optional)
  *               tags:
- *                 type: array
- *                 description: Array of tags for the image
- *                 items:
- *                   type: string
+ *                 type: string
+ *                 description: Comma-separated tags for the image (optional)
  *     responses:
  *       201:
  *         description: Image uploaded successfully
